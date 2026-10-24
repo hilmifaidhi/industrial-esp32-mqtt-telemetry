@@ -1,7 +1,7 @@
 # Industrial Multi-Sensor Telemetry & Tank Level Monitoring System
 
-![System Architecture](https://raw.githubusercontent.com/username/repository-name/main/architecture.png) 
-*(Ganti URL gambar di atas dengan URL gambar arsitektur kamu jika sudah di-upload)*
+![System Architecture](architecture.jpeg) 
+
 
 ## Executive Summary
 Merancang dan mengimplementasikan sistem akuisisi data telemetri berlatensi rendah berbasis mikrokontroler **ESP32** menggunakan protokol **MQTT over WebSockets (Pub/Sub)**. Sistem ini disimulasikan untuk pemantauan parameter kritis pada *Fuel Terminal / Storage Tank* di lingkungan industri proses seperti **Pertamina**, mencakup suhu tangki (*Storage Tank Temp*) dan level ketinggian fluida (*Fluid Level Gauge*).
