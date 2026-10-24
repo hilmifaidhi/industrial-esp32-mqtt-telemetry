@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial Telemetry Dashboard</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #fff; text-align: center; padding: 20px; }
+        h2 { color: #38bdf8; }
+        .card-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+        .card { background: #1e293b; border-radius: 12px; padding: 20px; width: 220px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #334155; }
+        .card h3 { font-size: 16px; color: #94a3b8; margin-bottom: 10px; }
+        .card .value { font-size: 28px; font-weight: bold; color: #38bdf8; }
+        .status-box { margin-top: 25px; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; display: inline-block; width: 300px; }
+        .normal { background-color: #065f46; color: #34d399; }
+        .warning { background-color: #991b1b; color: #f87171; }
+    </style>
+</head>
+<body>
+
+    <h2>Industrial Telemetry Monitor</h2>
+    <p>Live Data dari ESP32 (Wokwi)</p>
+
+    <div class="card-container">
+        <div class="card">
+            <h3>SUHU</h3>
+            <div class="value" id="temp">-- °C</div>
+        </div>
+        <div class="card">
+            <h3>KELEMBAPAN</h3>
+            <div class="value" id="hum">-- %</div>
+        </div>
+        <div class="card">
+            <h3>JARAK</h3>
+            <div class="value" id="dist">-- cm</div>
+        </div>
+    </div>
+
+    <div id="status" class="status-box normal">STATUS: CONNECTING...</div>
+
+    <script>
+        // WebSocket MQTT Connection ke HiveMQ Public Broker
+        const client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
+        const topic = 'industrial/telemetry/hilmi/data';
+
+        client.on('connect', () => {
+            console.log('Terhubung ke MQTT Broker!');
+            client.subscribe(topic);
+            document.getElementById('status').innerText = 'STATUS: CONNECTED';
+        });
+
+        client.on('message', (receivedTopic, message) => {
+            const data = JSON.parse(message.toString());
+            
+            document.getElementById('temp').innerText = data.temperature + ' °C';
+            document.getElementById('hum').innerText = data.humidity + ' %';
+            document.getElementById('dist').innerText = data.distance_cm + ' cm';
+
+            const statusElem = document.getElementById('status');
+            if (data.status === 'WARNING') {
+                statusElem.innerText = 'STATUS: WARNING / ALERT!';
+                statusElem.className = 'status-box warning';
+            } else {
+                statusElem.innerText = 'STATUS: NORMAL';
+                statusElem.className = 'status-box normal';
+            }
+        });
+    </script>
+</body>
+</html>
